@@ -1,9 +1,12 @@
+from dialog import Dialog
+
 
 def get_name():
+    dialog = Dialog()
+
     while True:
-        print('Napis jmeno:', end='')
-        name = input()
-        if name:
+        code, name = dialog.inputbox('Napis jmeno')
+        if code == dialog.OK and name:
             break
     return name
 
