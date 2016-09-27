@@ -11,7 +11,7 @@ def main():
     name = get_name_with_config(config)
     save_config(config)
 
-    print(name)
+    do_chat(name)
 
 
 def get_config():
@@ -40,6 +40,12 @@ def get_name(default=''):
         if code == dialog.OK and name:
             break
     return name
+
+
+def do_chat(name):
+    while True:
+        print("{}:".format(name), end='')
+        msg = input()
 
 
 main()
