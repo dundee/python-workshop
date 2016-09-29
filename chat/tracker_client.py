@@ -13,7 +13,7 @@ class TrackerClient(ConfigMixin):
     def get_users(self):
         r = requests.get('{}/users'.format(self.tracker_url), timeout=self.tracker_timeout)
         if r.status_code != 200:
-            raise ChatException("")
+            raise ChatException('')
         try:
             users = r.json()
         except JSONDecodeError:
@@ -24,4 +24,4 @@ class TrackerClient(ConfigMixin):
     def join(self):
         r = requests.post('{}/join'.format(self.tracker_url), json={'name': self.user_name}, timeout=self.tracker_timeout)
         if r.status_code != 200:
-            raise ChatException("")
+            raise ChatException('')

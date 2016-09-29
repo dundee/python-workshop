@@ -4,6 +4,7 @@ from blessed import Terminal
 
 from .config import ConfigMixin
 
+
 raw_print = partial(print, end='', flush=True)
 
 
@@ -46,7 +47,13 @@ class ChatSceen(ConfigMixin):
             self._t.move(self._t.height, 0) + self._t.clear_eol + '{}: '.format(self.user_name) + message,
         )
 
+    def show_error(self, error_message):
+        raw_print(self._t.move(0, 0) + self._t.clear_eol + error_message)
+
     def send_message(self, message):
         users = self.tracker.get_users()
         for user in users:
-            self.sender.send_message_to_user(user, message)
+            try:
+                self.sender.send_message_to_user(user, message)
+            except Exception as exc:
+                self.show_error('Problem sending message to user {}: {}'.format(user.name, str(exc)))
