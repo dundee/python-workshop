@@ -4,6 +4,7 @@ from blessed import Terminal
 from dialog import Dialog
 import json
 import requests
+from json.decoder import JSONDecodeError
 
 CONFIG_FILE = 'chat.ini'
 DEFAULT_CONFIG = {
@@ -95,11 +96,23 @@ def new_message_line(term, name, message):
 
 def get_users(tracker_url, timeout):
     r = requests.get('{}/users'.format(tracker_url), timeout=timeout)
-    return r.json()
+    if r.status_code != 200:
+        raise ChatException("")
+    try:
+        users = r.json()
+    except JSONDecodeError:
+        users = []
+    return users
 
 
 def join(tracker_url, timeout, name):
-    requests.post('{}/join'.format(tracker_url), json={'name': name}, timeout=timeout)
+    r = requests.post('{}/join'.format(tracker_url), json={'name': name}, timeout=timeout)
+    if r.status_code != 200:
+        raise ChatException("")
+
+
+class ChatException(Exception):
+    pass
 
 
 main()
