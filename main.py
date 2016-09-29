@@ -2,16 +2,25 @@ from configparser import ConfigParser
 
 from blessed import Terminal
 from dialog import Dialog
+import json
+import requests
 
 CONFIG_FILE = 'chat.ini'
-DEFAULT_CONFIG = {'user': {'name': ''}}
+DEFAULT_CONFIG = {
+    'tracker': {'url': 'http://localhost:5000', 'timeout': 0.1},
+    'user': {'name': ''},
+}
 
 
 def main():
     config = get_config()
     name = get_name_with_config(config)
     save_config(config)
-    do_chat(name)
+
+    join(config['tracker']['url'], float(config['tracker']['timeout']), name)
+    print(get_users(config['tracker']['url'], float(config['tracker']['timeout'])))
+
+    #do_chat(name)
 
 
 def get_config():
@@ -82,6 +91,15 @@ def new_message_line(term, name, message):
         end='',
         flush=True
     )
+
+
+def get_users(tracker_url, timeout):
+    r = requests.get('{}/users'.format(tracker_url), timeout=timeout)
+    return r.json()
+
+
+def join(tracker_url, timeout, name):
+    requests.post('{}/join'.format(tracker_url), json={'name': name}, timeout=timeout)
 
 
 main()
