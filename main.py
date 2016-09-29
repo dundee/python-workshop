@@ -5,12 +5,28 @@ from dialog import Dialog
 import json
 import requests
 from json.decoder import JSONDecodeError
+import time
 
 CONFIG_FILE = 'chat.ini'
 DEFAULT_CONFIG = {
     'tracker': {'url': 'http://localhost:5000', 'timeout': 0.1},
     'user': {'name': ''},
 }
+
+
+def retry(func):
+    RETRIES = 3
+    def wrapper(*args, **kwargs):
+        last_ex = None
+        for _ in range(RETRIES):
+            try:
+                return func(*args, **kwargs)
+            except Exception as ex:
+                last_ex = ex
+                time.sleep(0.5)
+        raise last_ex
+
+    return wrapper
 
 
 def main():
@@ -94,6 +110,7 @@ def new_message_line(term, name, message):
     )
 
 
+@retry
 def get_users(tracker_url, timeout):
     r = requests.get('{}/users'.format(tracker_url), timeout=timeout)
     if r.status_code != 200:
@@ -105,6 +122,7 @@ def get_users(tracker_url, timeout):
     return users
 
 
+@retry
 def join(tracker_url, timeout, name):
     r = requests.post('{}/join'.format(tracker_url), json={'name': name}, timeout=timeout)
     if r.status_code != 200:
