@@ -6,6 +6,7 @@ CONFIG_FILE = 'chat.ini'
 DEFAULT_CONFIG = {
     'tracker': {'url': 'http://localhost:5000', 'timeout': 0.1},
     'user': {'name': ''},
+    'server': {'port': 9000},
 }
 
 
@@ -51,3 +52,7 @@ class ConfigMixin:
     @property
     def user_name(self):
         return self._config['user']['name']
+
+    @property
+    def server_port(self):
+        return self._config['server']['port']

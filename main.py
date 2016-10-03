@@ -1,6 +1,7 @@
 from chat.chat_screen import ChatSceen
 from chat.config import get_config, update_name_from_user, save_config
 from chat.sender import Sender
+from chat.server import run_server
 from chat.tracker_client import TrackerClient
 
 
@@ -21,4 +22,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    run_server()
