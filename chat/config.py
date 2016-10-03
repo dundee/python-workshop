@@ -1,4 +1,6 @@
 from configparser import ConfigParser
+import logging
+import logging.config
 
 from dialog import Dialog
 
@@ -8,6 +10,54 @@ DEFAULT_CONFIG = {
     'user': {'name': ''},
     'server': {'port': 9000},
 }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'simple': {
+            'format': '%(levelname)s %(message)s',
+        },
+        'verbose': {
+            'format': '[%(asctime)s] %(levelname)s [%(pathname)s:%(lineno)s] %(message)s',
+            'datefmt': '%d/%b/%Y %H:%M:%S',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'logfile': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'formatter': 'verbose',
+            'filename': 'chat.log',
+            'mode': 'a+',
+        },
+    },
+    'loggers': {
+        '': {
+            'level': 'DEBUG',
+            'handlers': ['logfile'],
+        },
+        'requests': {
+            'level': 'INFO',
+        },
+        'werkzeug': {
+            'level': 'WARNING',
+        },
+    },
+}
+
+
+# logging.basicConfig(
+#     filename='chat.log',
+#     format='[%(asctime)s] %(levelname)s [%(pathname)s:%(lineno)s] %(message)s',
+#     level=logging.DEBUG,
+# )
+
+logging.config.dictConfig(LOGGING)
 
 
 def get_config():
