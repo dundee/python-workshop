@@ -36,7 +36,7 @@ class ChatSceen(ConfigMixin):
     def redraw_messages(self):
         for x, msg in enumerate(list(self.messages)[:self._t.height-2], 2):
             raw_print(
-                self._t.move(self._t.height-x, 0) + self._t.clear_eol + msg,
+                self._t.move(self._t.height-x, 0) + self._t.clear_eol + msg['user_name'] + ': ' + msg['message'],
             )
 
     def redraw_message_line(self):
@@ -48,7 +48,6 @@ class ChatSceen(ConfigMixin):
         raw_print(self._t.move(0, 0) + self._t.clear_eol + error_message)
 
     def send_message(self):
-        self.messages.add(self.message)
         users = self.tracker.get_users()
         for user in users:
             try:

@@ -10,7 +10,7 @@ def run_server(config, messages):
     def receive_message(request):
         content = request.get_data().decode('utf-8')
         message = json.loads(content)
-        messages.add(message['message'])
+        messages.add(message)
         return Response('OK')
 
     run_simple('0.0.0.0', config['server']['port'], receive_message)
