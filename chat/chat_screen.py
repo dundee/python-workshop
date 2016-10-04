@@ -2,18 +2,16 @@ from functools import partial
 
 from blessed import Terminal
 
+from .config import ConfigMixin
+
 raw_print = partial(print, end='', flush=True)
 
 
-class ChatSceen:
-    def __init__(self, config):
-        self._config = config
+class ChatSceen(ConfigMixin):
+    def __init__(self, *args, **kwds):
+        super().__init__(*args, **kwds)
         self._t = Terminal()
         self.messages = []
-
-    @property
-    def _user_name(self):
-        return self._config['user']['name']
 
     def run(self):
         message = ''
@@ -42,5 +40,5 @@ class ChatSceen:
 
     def redraw_message_line(self, message):
         raw_print(
-            self._t.move(self._t.height, 0) + self._t.clear_eol + '{}: '.format(self._user_name) + message,
+            self._t.move(self._t.height, 0) + self._t.clear_eol + '{}: '.format(self.user_name) + message,
         )

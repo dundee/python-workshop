@@ -2,29 +2,15 @@ from json.decoder import JSONDecodeError
 
 import requests
 
+from .config import ConfigMixin
 from .exceptions import ChatException
 from .retry import retry
 
 
-class TrackerClient:
-    def __init__(self, config):
-        self._config = config
-
-    @property
-    def url(self):
-        return self._config['tracker']['url']
-
-    @property
-    def _user_name(self):
-        return self._config['user']['name']
-
-    @property
-    def _timeout(self):
-        return float(self._config['tracker']['timeout'])
-
+class TrackerClient(ConfigMixin):
     @retry
     def get_users(self):
-        r = requests.get('{}/users'.format(self.url), timeout=self._timeout)
+        r = requests.get('{}/users'.format(self.tracker_url), timeout=self.tracker_timeout)
         if r.status_code != 200:
             raise ChatException("")
         try:
@@ -35,6 +21,6 @@ class TrackerClient:
 
     @retry
     def join(self):
-        r = requests.post('{}/join'.format(self.url), json={'name': self._user_name}, timeout=self._timeout)
+        r = requests.post('{}/join'.format(self.tracker_url), json={'name': self.user_name}, timeout=self.tracker_timeout)
         if r.status_code != 200:
             raise ChatException("")

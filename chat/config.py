@@ -34,3 +34,20 @@ def get_name_from_user(default=''):
         if code == dialog.OK and name:
             break
     return name
+
+
+class ConfigMixin:
+    def __init__(self, config):
+        self._config = config
+
+    @property
+    def tracker_url(self):
+        return self._config['tracker']['url']
+
+    @property
+    def tracker_timeout(self):
+        return float(self._config['tracker']['timeout'])
+
+    @property
+    def user_name(self):
+        return self._config['user']['name']
