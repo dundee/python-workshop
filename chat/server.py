@@ -3,17 +3,14 @@ import json
 from werkzeug.wrappers import Request, Response
 from werkzeug.serving import run_simple
 
-PORT = 9000
 
+def run_server(config, messages):
 
-@Request.application
-def receive_message(request):
-    content = request.get_data().decode('utf-8')
-    content = json.loads(content)
+    @Request.application
+    def receive_message(request):
+        content = request.get_data().decode('utf-8')
+        message = json.loads(content)
+        messages.add(message['message'])
+        return Response('OK')
 
-    print('Prisla zprava od {}: {}'.format(content['user_name'], content['message']))
-    return Response('OK')
-
-
-def run_server():
-    run_simple('localhost', PORT, receive_message)
+    run_simple('0.0.0.0', config['server']['port'], receive_message)

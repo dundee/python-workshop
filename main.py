@@ -1,5 +1,8 @@
+from threading import Thread
+
 from chat.chat_screen import ChatSceen
 from chat.config import get_config, update_name_from_user, save_config
+from chat.model import Messages
 from chat.sender import Sender
 from chat.server import run_server
 from chat.tracker_client import TrackerClient
@@ -13,14 +16,18 @@ def main():
     tracker = TrackerClient(config)
     tracker.join()
 
+    messages = Messages()
+
+    thread = Thread(target=run_server, daemon=True, kwargs={'config': config, 'messages': messages})
+    thread.start()
+
     sender = Sender(config)
 
     try:
-        ChatSceen(config=config, tracker=tracker, sender=sender).run()
+        ChatSceen(config=config, tracker=tracker, sender=sender, messages=messages).run()
     except KeyboardInterrupt:
         pass
 
 
 if __name__ == '__main__':
-    # main()
-    run_server()
+    main()
