@@ -9,6 +9,7 @@ DEFAULT_CONFIG = {
     'tracker': {'url': 'http://localhost:5000', 'timeout': 0.1},
     'user': {'name': ''},
     'server': {'port': 9000},
+    'database': {'file': 'chat.db'},
 }
 LOGGING = {
     'version': 1,

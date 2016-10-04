@@ -16,7 +16,8 @@ def main():
     tracker = TrackerClient(config)
     tracker.join()
 
-    messages = Messages()
+    messages = Messages(config['database'])
+    messages.load()
 
     thread = Thread(target=run_server, daemon=True, kwargs={'config': config, 'messages': messages})
     thread.start()
@@ -26,7 +27,7 @@ def main():
     try:
         ChatSceen(config=config, tracker=tracker, sender=sender, messages=messages).run()
     except KeyboardInterrupt:
-        pass
+        messages.save()
 
 
 if __name__ == '__main__':
