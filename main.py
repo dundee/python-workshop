@@ -1,136 +1,22 @@
-from configparser import ConfigParser
-
-from blessed import Terminal
-from dialog import Dialog
-import json
-import requests
-from json.decoder import JSONDecodeError
-import time
-
-CONFIG_FILE = 'chat.ini'
-DEFAULT_CONFIG = {
-    'tracker': {'url': 'http://localhost:5000', 'timeout': 0.1},
-    'user': {'name': ''},
-}
-
-
-def retry(func):
-    RETRIES = 3
-    def wrapper(*args, **kwargs):
-        last_ex = None
-        for _ in range(RETRIES):
-            try:
-                return func(*args, **kwargs)
-            except Exception as ex:
-                last_ex = ex
-                time.sleep(0.5)
-        raise last_ex
-
-    return wrapper
+from chat.chat_screen import ChatSceen
+from chat.config import get_config, update_name_from_user, save_config
+from chat.tracker_client import TrackerClient
 
 
 def main():
     config = get_config()
-    name = get_name_with_config(config)
+    update_name_from_user(config)
     save_config(config)
 
-    join(config['tracker']['url'], float(config['tracker']['timeout']), name)
-    print(get_users(config['tracker']['url'], float(config['tracker']['timeout'])))
+    t = TrackerClient(config)
+    t.join()
+    print(t.get_users())
 
-    #do_chat(name)
-
-
-def get_config():
-    config = ConfigParser()
-    config.read_dict(DEFAULT_CONFIG)
-    config.read(CONFIG_FILE)
-    return config
-
-
-def save_config(config):
-    with open(CONFIG_FILE, 'w') as configfile:
-        config.write(configfile)
-
-
-def get_name_with_config(config):
-    default = config['user']['name']
-    name = get_name(default)
-    config['user']['name'] = name
-    return name
-
-
-def get_name(default=''):
-    dialog = Dialog()
-    while True:
-        code, name = dialog.inputbox('Napis jmeno', init=default)
-        if code == dialog.OK and name:
-            break
-    return name
-
-
-def do_chat(name):
-    term = Terminal()
-
-    messages = []
-    message = ''
-
-    with term.fullscreen():
-        with term.cbreak():
-            redraw_screen(term, name, messages)
-            while True:
-                val = term.inkey()
-                if val.name == 'KEY_ENTER':
-                    messages.insert(0, message)
-                    message = ''
-                    redraw_screen(term, name, messages)
-                else:
-                    message += str(val)
-                    new_message_line(term, name, message)
-
-
-def redraw_screen(term, name, messages):
-    show_messages(term, messages)
-    new_message_line(term, name, '')
-
-
-def show_messages(term, messages):
-    for x, msg in enumerate(messages[:term.height-2], 2):
-        print(
-            term.move(term.height-x, 0) + term.clear_eol + msg,
-            end='',
-            flush=True
-        )
-
-
-def new_message_line(term, name, message):
-    print(
-        term.move(term.height, 0) + term.clear_eol + '{}: '.format(name) + message,
-        end='',
-        flush=True
-    )
-
-
-@retry
-def get_users(tracker_url, timeout):
-    r = requests.get('{}/users'.format(tracker_url), timeout=timeout)
-    if r.status_code != 200:
-        raise ChatException("")
     try:
-        users = r.json()
-    except JSONDecodeError:
-        users = []
-    return users
+        ChatSceen(config).run()
+    except KeyboardInterrupt:
+        pass
 
 
-@retry
-def join(tracker_url, timeout, name):
-    r = requests.post('{}/join'.format(tracker_url), json={'name': name}, timeout=timeout)
-    if r.status_code != 200:
-        raise ChatException("")
-
-
-class ChatException(Exception):
-    pass
-
-
-main()
+if __name__ == '__main__':
+    main()
