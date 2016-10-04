@@ -1,5 +1,7 @@
 from threading import Thread
 
+from blessed import Terminal
+
 from chat.chat_screen import ChatSceen
 from chat.config import get_config, update_name_from_user, save_config
 from chat.model import Messages
@@ -28,6 +30,7 @@ def main():
         ChatSceen(config=config, tracker=tracker, sender=sender, messages=messages).run()
     except KeyboardInterrupt:
         messages.save()
+        print(Terminal().clear())
 
 
 if __name__ == '__main__':
