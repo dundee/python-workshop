@@ -17,6 +17,9 @@ class User:
     def __repr__(self):
         return '<User ip={s.ip} name={s.name}>'.format(s=self)
 
+    def __eq__(self, obj):
+        return self.ip == obj.ip and self.name == obj.name
+
 
 class Messages:
     def __init__(self, db_config):

@@ -15,7 +15,7 @@ def main():
     update_name_from_user(config)
     save_config(config)
 
-    tracker = TrackerClient(config)
+    tracker = TrackerClient(config=config)
     tracker.join()
 
     messages = Messages(config['database'])
