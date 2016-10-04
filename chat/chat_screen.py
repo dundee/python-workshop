@@ -8,9 +8,11 @@ raw_print = partial(print, end='', flush=True)
 
 
 class ChatSceen(ConfigMixin):
-    def __init__(self, *args, **kwds):
+    def __init__(self, tracker, sender, *args, **kwds):
         super().__init__(*args, **kwds)
         self._t = Terminal()
+        self.tracker = tracker
+        self.sender = sender
         self.messages = []
 
     def run(self):
@@ -22,6 +24,7 @@ class ChatSceen(ConfigMixin):
                     val = self._t.inkey()
                     if val.name == 'KEY_ENTER':
                         self.messages.insert(0, message)
+                        self.send_message(message)
                         message = ''
                         self.redraw()
                     else:
@@ -42,3 +45,8 @@ class ChatSceen(ConfigMixin):
         raw_print(
             self._t.move(self._t.height, 0) + self._t.clear_eol + '{}: '.format(self.user_name) + message,
         )
+
+    def send_message(self, message):
+        users = self.tracker.get_users()
+        for user in users:
+            self.sender.send_message_to_user(user, message)
