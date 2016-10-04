@@ -4,6 +4,7 @@ import requests
 
 from .config import ConfigMixin
 from .exceptions import ChatException
+from .model import User
 from .retry import retry
 
 
@@ -17,7 +18,7 @@ class TrackerClient(ConfigMixin):
             users = r.json()
         except JSONDecodeError:
             users = []
-        return users
+        return [User(user['ip'], user['name']) for user in users]
 
     @retry
     def join(self):
