@@ -1,4 +1,5 @@
 from json.decoder import JSONDecodeError
+import logging
 
 import requests
 
@@ -18,6 +19,7 @@ class TrackerClient(ConfigMixin):
             users = r.json()
         except JSONDecodeError:
             users = []
+        logging.debug('Logged users: %r', users)
         return [User(user['ip'], user['name']) for user in users]
 
     @retry(5)
@@ -25,3 +27,4 @@ class TrackerClient(ConfigMixin):
         r = requests.post('{}/join'.format(self.tracker_url), json={'name': self.user_name}, timeout=self.tracker_timeout)
         if r.status_code != 200:
             raise ChatException('')
+        logging.info('User %s successfully joined', self.user_name)

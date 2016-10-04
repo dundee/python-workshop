@@ -1,3 +1,4 @@
+import logging
 from threading import Semaphore
 
 
@@ -25,5 +26,7 @@ class Messages:
             yield message
 
     def add(self, message):
+        logging.info('Trying to add message %r', message)
         with self._lock:
             self._messages.insert(0, message)
+        logging.debug('Message %r added', message)
