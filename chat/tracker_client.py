@@ -22,7 +22,7 @@ class TrackerClient(ConfigMixin):
         try:
             users = r.json()
         except JSONDecodeError:
-            users = []
+            return ()
         logging.debug('Logged users: %r', users)
         return [User(user['ip'], user['name']) for user in users]
 
