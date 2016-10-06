@@ -1,4 +1,8 @@
+from functools import partial
+
 from blessed import Terminal
+
+raw_print = partial(print, end='', flush=True)
 
 
 class ChatSceen:
@@ -32,15 +36,11 @@ class ChatSceen:
 
     def redraw_messages(self):
         for x, msg in enumerate(self.messages[:self._t.height-2], 2):
-            print(
+            raw_print(
                 self._t.move(self._t.height-x, 0) + self._t.clear_eol + msg,
-                end='',
-                flush=True
             )
 
     def redraw_message_line(self, message):
-        print(
+        raw_print(
             self._t.move(self._t.height, 0) + self._t.clear_eol + '{}: '.format(self._user_name) + message,
-            end='',
-            flush=True
         )
