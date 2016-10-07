@@ -3,8 +3,10 @@ import json
 from werkzeug.wrappers import Request, Response
 from werkzeug.serving import run_simple
 
+from .model import Messages
 
-def run_server(config, messages):
+
+def run_server(config: dict, messages: Messages):
 
     @Request.application
     def receive_message(request):

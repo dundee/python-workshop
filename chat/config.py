@@ -1,6 +1,7 @@
 from configparser import ConfigParser
 import logging
 import logging.config
+from typing import Any, Mapping
 
 from dialog import Dialog
 
@@ -10,7 +11,7 @@ DEFAULT_CONFIG = {
     'user': {'name': ''},
     'server': {'port': 9000},
     'database': {'file': 'chat.db'},
-}
+}  # type: Mapping[str, Mapping[str, Any]]
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -61,25 +62,25 @@ LOGGING = {
 logging.config.dictConfig(LOGGING)
 
 
-def get_config():
+def get_config() -> ConfigParser:
     config = ConfigParser()
     config.read_dict(DEFAULT_CONFIG)
     config.read(CONFIG_FILE)
     return config
 
 
-def save_config(config):
+def save_config(config: ConfigParser):
     with open(CONFIG_FILE, 'w') as configfile:
         config.write(configfile)
 
 
-def update_name_from_user(config):
+def update_name_from_user(config: ConfigParser):
     default = config['user']['name']
     name = get_name_from_user(default)
     config['user']['name'] = name
 
 
-def get_name_from_user(default=''):
+def get_name_from_user(default: str='') -> str:
     dialog = Dialog()
     while True:
         code, name = dialog.inputbox('Napis jmeno', init=default)
@@ -89,21 +90,21 @@ def get_name_from_user(default=''):
 
 
 class ConfigMixin:
-    def __init__(self, config):
+    def __init__(self, config: ConfigParser) -> None:
         self._config = config
 
     @property
-    def tracker_url(self):
+    def tracker_url(self) -> str:
         return self._config['tracker']['url']
 
     @property
-    def tracker_timeout(self):
+    def tracker_timeout(self) -> float:
         return float(self._config['tracker']['timeout'])
 
     @property
-    def user_name(self):
+    def user_name(self) -> str:
         return self._config['user']['name']
 
     @property
-    def server_port(self):
+    def server_port(self) -> str:
         return self._config['server']['port']

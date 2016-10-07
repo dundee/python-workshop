@@ -3,7 +3,7 @@ import sqlite3
 
 
 @contextmanager
-def db_connection(db_config):
+def db_connection(db_config: dict):
     connection = sqlite3.connect(db_config['file'])
     cursor = connection.cursor()
 

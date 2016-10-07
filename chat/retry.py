@@ -3,7 +3,7 @@ import logging
 import time
 
 
-def retry(count):
+def retry(count: int):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwds):
